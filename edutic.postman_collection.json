@@ -1,0 +1,992 @@
+{
+  "info": {
+    "name": "Edutic API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Test User", "type": "text" },
+                { "key": "email", "value": "test@example.com", "type": "text" },
+                { "key": "password", "value": "password123", "type": "text" },
+                { "key": "role", "value": "student", "type": "text", "description": "owner | student" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "test@example.com", "type": "text" },
+                { "key": "password", "value": "password123", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/logout",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/profile",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/profile/update",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "New Name", "type": "text" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                { "key": "password", "value": "newpassword123", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/forgot-password",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "test@example.com", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/reset-password",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "email", "value": "test@example.com", "type": "text" },
+                { "key": "otp", "value": "123456", "type": "text" },
+                { "key": "password", "value": "newpassword123", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/users?role=student&status=approved&search=test&per_page=10",
+              "query": [
+                { "key": "role", "value": "student" },
+                { "key": "status", "value": "approved" },
+                { "key": "search", "value": "test" },
+                { "key": "per_page", "value": "10" }
+              ]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Update User Status (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/users/1/status",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "status", "value": "approved", "type": "text", "description": "pending | approved | rejected" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign Role (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/users/1/role",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "role", "value": "admin", "type": "text", "description": "admin | student" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/users/create",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "New User", "type": "text" },
+                { "key": "email", "value": "newuser@example.com", "type": "text" },
+                { "key": "password", "value": "password123", "type": "text" },
+                { "key": "role", "value": "admin", "type": "text", "description": "admin | student" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Main Categories",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/main-categories" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/main-categories/1" }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/main-categories",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Category Name", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/main-categories/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Name", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/main-categories/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sub Categories",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/sub-categories" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/sub-categories/1" }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sub-categories",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "main_category_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Sub Category Name", "type": "text" },
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/sub-categories/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Name", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/sub-categories/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/courses?search=&type=online&price_min=0&price_max=1000&sort_by=created_at&dir=desc&per_page=10",
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "type", "value": "online", "description": "online | offline" },
+                { "key": "price_min", "value": "0" },
+                { "key": "price_max", "value": "1000" },
+                { "key": "sort_by", "value": "created_at" },
+                { "key": "dir", "value": "desc" },
+                { "key": "per_page", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/courses/1" }
+        },
+        {
+          "name": "Create (Owner/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/courses",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "sub_category_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Course Name", "type": "text" },
+                { "key": "description", "value": "Course Description", "type": "text" },
+                { "key": "type", "value": "online", "type": "text", "description": "online | offline" },
+                { "key": "price", "value": "100", "type": "text" },
+                { "key": "image", "type": "file", "src": "" },
+                { "key": "short_video", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/courses/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Course Name", "type": "text" },
+                { "key": "price", "value": "200", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete (Owner)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/courses/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Dashboard - Courses with Subscriptions (Admin/Owner)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/courses-with-subscriptions",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sections",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/sections" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/sections/1" }
+        },
+        {
+          "name": "Create (Owner/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sections",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "course_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Section Name", "type": "text" },
+                { "key": "description", "value": "Section Description", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (Owner/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sections/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Section Name", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete (Owner/Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/sections/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Videos",
+      "item": [
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/videos",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Get One",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/videos/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Stream Video (Subscribed Student / Owner / Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/videos/1/stream",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Upload Video (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/videos",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "section_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Video Name", "type": "text" },
+                { "key": "description", "value": "Video Description", "type": "text" },
+                { "key": "duration", "value": "10:30", "type": "text" },
+                { "key": "scheduled_at", "value": "2025-12-30 15:30", "type": "text" },
+                { "key": "video_file", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Video (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/videos/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Updated Video Name", "type": "text" },
+                { "key": "duration", "value": "12:00", "type": "text" },
+                { "key": "video_file", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Video (Owner)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/videos/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Get All (Owner/Admin)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/subscriptions?status=pending&per_page=10",
+              "query": [
+                { "key": "status", "value": "pending", "description": "pending | active | cancelled" },
+                { "key": "per_page", "value": "10" }
+              ]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Get One",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/subscriptions/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Subscribe to Course (Student)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/subscriptions",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "course_id", "value": "1", "type": "text" },
+                { "key": "payment_method", "value": "instapay", "type": "text", "description": "instapay | vodafone_cash" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Receipt (Student)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/subscriptions/1/receipt",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "receipt", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Status (Owner/Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/subscriptions/1/status",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "status", "value": "active", "type": "text", "description": "pending | active | cancelled" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "My Subscriptions (Student)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/my-subscriptions",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/subscriptions/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/blogs" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/blogs/1" }
+        },
+        {
+          "name": "Create (Owner/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/blogs",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Blog Title", "type": "text" },
+                { "key": "description", "value": "Blog Content", "type": "text" },
+                { "key": "imgSrc", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/blogs/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Updated Title", "type": "text" },
+                { "key": "imgSrc", "type": "file", "src": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete (Owner)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/blogs/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Dashboard Blogs (Admin/Owner)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/admin/blogs",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/comments" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/comments/1" }
+        },
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/comments",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "blog_id", "value": "1", "type": "text" },
+                { "key": "comment_text", "value": "This is a comment", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Comment (Owner of Comment / Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/comments/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "comment_text", "value": "Updated comment", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment (Owner of Comment / Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/comments/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Replies",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/replies" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/replies/1" }
+        },
+        {
+          "name": "Add Reply",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/replies",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "comment_id", "value": "1", "type": "text" },
+                { "key": "reply_text", "value": "This is a reply", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Reply (Owner of Reply / Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/replies/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "reply_text", "value": "Updated reply", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Reply (Owner of Reply / Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/replies/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/contacts",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "John Doe", "type": "text" },
+                { "key": "email", "value": "john@example.com", "type": "text" },
+                { "key": "message", "value": "Hello, I need help", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Messages (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/contacts",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Get One Message (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/contacts/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Delete Message (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/contacts/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "item": [
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/groups",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Get One",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/groups/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/groups",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Group Name", "type": "text" },
+                { "key": "course_id", "value": "1", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/groups/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Updated Group Name\" }",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Rate Group",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/groups/1/rate",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "rating", "value": "5", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/groups/1/member/2",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"individual_rating\": 4, \"task\": \"Task description\" }",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/groups/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get All",
+          "request": { "method": "GET", "url": "{{base_url}}/reviews" }
+        },
+        {
+          "name": "Get One",
+          "request": { "method": "GET", "url": "{{base_url}}/reviews/1" }
+        },
+        {
+          "name": "Add Review",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/reviews",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "course_id", "value": "1", "type": "text" },
+                { "key": "rating", "value": "5", "type": "text" },
+                { "key": "comment", "value": "Great course!", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/reviews/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"rating\": 4, \"comment\": \"Updated review\" }",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/reviews/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tasks?group_id=1",
+              "query": [{ "key": "group_id", "value": "1" }]
+            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Get One",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/tasks/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Create Task (Owner)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/tasks",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "group_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Task Name", "type": "text" },
+                { "key": "description", "value": "Task Description", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Task (Owner)",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/tasks/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Updated Task\", \"description\": \"Updated description\" }",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Task (Owner)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/tasks/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] }
+          }
+        },
+        {
+          "name": "Submit Answer (Student)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/tasks/1/answer",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}" }] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "answer", "value": "My answer here", "type": "text" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
